@@ -70,6 +70,7 @@ public class SaisiePoidsBac extends JFrame {
 		contentPane.add(lblTitre);
 		
 		comboBoxLots = new JComboBox<Integer>();
+		comboBoxLots.addItem(null);
 		ArrayList<Integer> allLotsID = lots.LotsMethods.getLotsID();
 		for (Integer row : allLotsID) {
 			comboBoxLots.addItem(row);
@@ -86,12 +87,16 @@ public class SaisiePoidsBac extends JFrame {
 		contentPane.add(textField);
 		textField.setColumns(10);
 		
-		addBacs();
-		setPoidsText();
 		comboBoxLots.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 addBacs();
+            }
+        });
+		
+		comboBoxBacs.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
                 setPoidsText();
             }
         });
@@ -135,12 +140,12 @@ public class SaisiePoidsBac extends JFrame {
 				}
 				
 				Boolean result = bacs.BacsMethods.addPoidsBac(selectedBac, selectedLot, poidsBac);
-				dispose();
 				if (result) {
+					dispose();
 					if (poidsExist) {
 						JOptionPane.showMessageDialog(null, "Modification effectuée.", "Message", JOptionPane.INFORMATION_MESSAGE);
 					} else {
-						JOptionPane.showMessageDialog(null, "Ajout effectuée.", "Message", JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(null, "Ajout effectué.", "Message", JOptionPane.INFORMATION_MESSAGE);
 					}
 				} else {
 					if (poidsExist) {
@@ -166,19 +171,21 @@ public class SaisiePoidsBac extends JFrame {
 		lblInstruction2.setBounds(46, 113, 165, 16);
 		contentPane.add(lblInstruction2);
 		
-		JLabel lblInstruction3 = new JLabel("Saisissez le poids du bac :");
+		JLabel lblInstruction3 = new JLabel("Saisissez le poids (en Kg) :");
 		lblInstruction3.setFont(new Font("Dialog", Font.ITALIC, 11));
 		lblInstruction3.setBounds(46, 168, 165, 16);
 		contentPane.add(lblInstruction3);
 	}
 	
-	private void addBacs() {
+	private void addBacs() {		
 		Integer selectedLot = (Integer) comboBoxLots.getSelectedItem();
-        comboBoxBacs.removeAllItems();
-        
-        ArrayList<Integer> allBacsID = bacs.BacsMethods.getBacsIdByLotId(selectedLot);
-		for (Integer row : allBacsID) {
-			comboBoxBacs.addItem(row);
+		comboBoxBacs.removeAllItems();
+		if (selectedLot != null) {      
+	        comboBoxBacs.addItem(null);
+	        ArrayList<Integer> allBacsID = bacs.BacsMethods.getBacsIdByLotId(selectedLot);
+			for (Integer row : allBacsID) {
+				comboBoxBacs.addItem(row);
+			}
 		}
 	}
 	
@@ -186,13 +193,12 @@ public class SaisiePoidsBac extends JFrame {
 		selectedLot = (Integer) comboBoxLots.getSelectedItem();
         selectedBac = (Integer) comboBoxBacs.getSelectedItem();
         textField.setText("");
+        poidsExist = false;
         if (selectedLot != null && selectedBac != null) {
         	Float poidsBac = bacs.BacsMethods.getPoidsBac(selectedBac, selectedLot);
         	if (poidsBac != 0) {
         		textField.setText(poidsBac.toString());
         		poidsExist = true;
-        	} else {
-        		poidsExist = false;
         	}
         }
 	}

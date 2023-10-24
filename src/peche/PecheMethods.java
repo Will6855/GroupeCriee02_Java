@@ -38,19 +38,21 @@ public class PecheMethods {
 
 	
 	public static boolean addPeche(Integer idBateau) {
-		try {
-		    String query = "INSERT INTO peche(datePeche, idBateau) VALUES(?, ?)";
-		    PreparedStatement st = con.prepareStatement(query);
-		    Calendar currenttime = Calendar.getInstance();
-		    Date sqldate = new Date((currenttime.getTime()).getTime());
-		    st.setDate(1, sqldate);
-			st.setInt(2, idBateau);
-		    int rs = st.executeUpdate();
-		    if (rs > 0) {
-		    	return true;
-		    }
-		} catch (SQLException ex) {
-			con = main.Connexion.getConnection();
+		if (idBateau > 0) {
+			try {
+			    String query = "INSERT INTO peche(datePeche, idBateau) VALUES(?, ?)";
+			    PreparedStatement st = con.prepareStatement(query);
+			    Calendar currenttime = Calendar.getInstance();
+			    Date sqldate = new Date((currenttime.getTime()).getTime());
+			    st.setDate(1, sqldate);
+				st.setInt(2, idBateau);
+			    int rs = st.executeUpdate();
+			    if (rs > 0) {
+			    	return true;
+			    }
+			} catch (SQLException ex) {
+				con = main.Connexion.getConnection();
+			}
 		}
 		return false;
 	}

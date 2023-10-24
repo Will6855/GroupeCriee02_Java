@@ -61,6 +61,7 @@ public class CreerPeche extends JFrame {
 		final JComboBox<String> comboBox = new JComboBox<String>();
 		comboBox.setToolTipText("Bateau venant de faire la pêche");
 		ArrayList<HashMap<String, Object>> allBateaux = peche.PecheMethods.getBateaux();
+		comboBox.addItem("");
 		for (HashMap<String, Object> row : allBateaux) {
 		      comboBox.addItem((String) row.get("nom"));
 		}
@@ -88,12 +89,17 @@ public class CreerPeche extends JFrame {
 		btnValider.setForeground(new Color(255, 255, 255));
 		btnValider.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				boolean result = peche.PecheMethods.addPeche(comboBox.getSelectedIndex()+1);
-				dispose();
-				if (result) {
-					JOptionPane.showMessageDialog(null, "Ajout effectuée.", "Message", JOptionPane.INFORMATION_MESSAGE);
+				Integer idBateau = comboBox.getSelectedIndex();
+				if (idBateau != 0) {
+					boolean result = peche.PecheMethods.addPeche(idBateau);
+					if (result) {
+						dispose();
+						JOptionPane.showMessageDialog(null, "Ajout effectué.", "Message", JOptionPane.INFORMATION_MESSAGE);
+					} else {
+						JOptionPane.showMessageDialog(null, "Ajout impossible.", "Message", JOptionPane.INFORMATION_MESSAGE);
+					}
 				} else {
-					JOptionPane.showMessageDialog(null, "Ajout impossible.", "Message", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Veuillez sélectionner un bateau.", "Message", JOptionPane.INFORMATION_MESSAGE);
 				}
 			}
 		});
