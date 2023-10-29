@@ -11,7 +11,7 @@ public class Connexion {
 	// Connexion à la base de donnée
 	public static void connection() {
 		try {
-			con = DriverManager.getConnection("jdbc:mysql:///bdd_criee","root","");
+			con = DriverManager.getConnection("jdbc:mysql:///bdd_criee2","root","");
 			System.out.println("La connexion a la base de donnees a reussi.");
 		} catch (SQLException e) {
 			System.err.println("La connexion a la base de donnees a echoue.");

@@ -1,6 +1,5 @@
 package peche;
 
-import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -12,10 +11,13 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.sql.Date;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 import java.awt.Font;
 import javax.swing.SwingConstants;
+
+import main.Item;
 
 
 public class CreerPeche extends JFrame {
@@ -27,26 +29,10 @@ public class CreerPeche extends JFrame {
 	private JPanel contentPane;
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					CreerPeche addPeche = new CreerPeche();
-					addPeche.setLocationRelativeTo(null);
-					addPeche.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
 	 * Create the frame.
+	 * @param selectedDate 
 	 */
-	public CreerPeche() {		
+	public CreerPeche(final Date selectedDate) {		
 		setResizable(false);
 		setTitle("Ajout Peche");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -58,15 +44,15 @@ public class CreerPeche extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		final JComboBox<String> comboBox = new JComboBox<String>();
-		comboBox.setToolTipText("Bateau venant de faire la pêche");
+		final JComboBox<Item<Integer>> comboBoxBateau = new JComboBox<Item<Integer>>();
+		comboBoxBateau.setToolTipText("Sélectionnez un bateau");
 		ArrayList<HashMap<String, Object>> allBateaux = peche.PecheMethods.getBateaux();
-		comboBox.addItem("");
+		comboBoxBateau.addItem(new Item<Integer>(-1, ""));
 		for (HashMap<String, Object> row : allBateaux) {
-		      comboBox.addItem((String) row.get("nom"));
+		      comboBoxBateau.addItem(new Item<Integer>((Integer) row.get("id"), (String) row.get("nom")));
 		}
-		comboBox.setBounds(33, 100, 172, 21);
-		contentPane.add(comboBox);
+		comboBoxBateau.setBounds(33, 100, 172, 21);
+		contentPane.add(comboBoxBateau);
 		
 		JLabel lblTitre = new JLabel("Nouvelle pêche du jour");
 		lblTitre.setFont(new Font("Dialog", Font.BOLD, 15));
@@ -89,14 +75,20 @@ public class CreerPeche extends JFrame {
 		btnValider.setForeground(new Color(255, 255, 255));
 		btnValider.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Integer idBateau = comboBox.getSelectedIndex();
-				if (idBateau != 0) {
-					boolean result = peche.PecheMethods.addPeche(idBateau);
-					if (result) {
-						dispose();
-						JOptionPane.showMessageDialog(null, "Ajout effectué.", "Message", JOptionPane.INFORMATION_MESSAGE);
+				@SuppressWarnings("unchecked")
+				Item<Integer> selectedBateau = (Item<Integer>)comboBoxBateau.getSelectedItem();
+				Integer idBateau = selectedBateau.getValue();
+				if (idBateau >= 0) {
+					if (peche.PecheMethods.verifPeche(idBateau, selectedDate)) {
+						JOptionPane.showMessageDialog(null, "Pêche déjà existante.", "Message", JOptionPane.INFORMATION_MESSAGE);
 					} else {
-						JOptionPane.showMessageDialog(null, "Ajout impossible.", "Message", JOptionPane.INFORMATION_MESSAGE);
+						if (peche.PecheMethods.addPeche(idBateau, selectedDate)) {
+							dispose();
+							JOptionPane.showMessageDialog(null, "Ajout effectué.", "Message", JOptionPane.INFORMATION_MESSAGE);
+							peche.GestionPecheVet.updateTable();
+						} else {
+							JOptionPane.showMessageDialog(null, "Ajout impossible.", "Message", JOptionPane.INFORMATION_MESSAGE);
+						}
 					}
 				} else {
 					JOptionPane.showMessageDialog(null, "Veuillez sélectionner un bateau.", "Message", JOptionPane.INFORMATION_MESSAGE);
