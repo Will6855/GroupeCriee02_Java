@@ -42,7 +42,7 @@ public class GestionLotVet extends JFrame {
 	private static DefaultTableModel model;
 	private JTable table;
 	private JScrollPane JScroll;
-	private JButton btnVoirLots;
+	private JButton btnVoirBacs;
 	private JButton btnSupprimer;
 	private JButton btnRetour;
 	
@@ -73,9 +73,9 @@ public class GestionLotVet extends JFrame {
 		model.setValue(selectedDate);
 		model.setSelected(true);
 		Properties p = new Properties();
-		p.put("text.today", "Today");
-		p.put("text.month", "Month");
-		p.put("text.year", "Year");
+		p.put("text.today", "Aujourd'hui");
+		p.put("text.month", "Mois");
+		p.put("text.year", "Année");
 		JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
 		datePicker = new JDatePickerImpl(datePanel, new main.DateLabelFormatter()); 
 		contentPane.add(datePicker);
@@ -146,16 +146,23 @@ public class GestionLotVet extends JFrame {
 		btnAjouter.setBounds(608, 66, 168, 26);
 		contentPane.add(btnAjouter);
 		
-		btnVoirLots = new JButton("Voir les bacs associés");
-		btnVoirLots.setEnabled(false);
-		btnVoirLots.setBackground(new Color(0, 0, 153));
-		btnVoirLots.addActionListener(new ActionListener() {
+		btnVoirBacs = new JButton("Voir les bacs associés");
+		btnVoirBacs.setEnabled(false);
+		btnVoirBacs.setBackground(new Color(0, 0, 153));
+		btnVoirBacs.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				int row = table.getSelectedRow();
+				Integer idLot = (Integer) table.getModel().getValueAt(row, 0);
+				java.sql.Date selectedDate = (java.sql.Date) datePicker.getModel().getValue();
+				bacs.GestionBacVet gestionBacVet = new bacs.GestionBacVet(idLot);
+				gestionBacVet.setLocationRelativeTo(null);
+				gestionBacVet.setVisible(true);
+				dispose();
 			}
 		});
-		btnVoirLots.setForeground(Color.WHITE);
-		btnVoirLots.setBounds(608, 104, 168, 26);
-		contentPane.add(btnVoirLots);
+		btnVoirBacs.setForeground(Color.WHITE);
+		btnVoirBacs.setBounds(608, 104, 168, 26);
+		contentPane.add(btnVoirBacs);
 		
 		btnSupprimer = new JButton("Supprimer");
 		btnSupprimer.setEnabled(false);
@@ -203,14 +210,14 @@ public class GestionLotVet extends JFrame {
  	    			btnSupprimer.setEnabled(true);
  	    			btnSupprimer.setBackground(new Color(255, 0, 51));
  	    			
- 	    			btnVoirLots.setEnabled(true);
- 	    			btnVoirLots.setBackground(new Color(0, 51, 204));
+ 	    			btnVoirBacs.setEnabled(true);
+ 	    			btnVoirBacs.setBackground(new Color(0, 51, 204));
  	    		}else {
  	    			btnSupprimer.setEnabled(false);
  	    			btnSupprimer.setBackground(new Color(204, 0, 51));
  	    			
- 	    			btnVoirLots.setEnabled(false);
- 	    			btnVoirLots.setBackground(new Color(0, 0, 153));
+ 	    			btnVoirBacs.setEnabled(false);
+ 	    			btnVoirBacs.setBackground(new Color(0, 0, 153));
  	    		}
  	    	}
  	    });
@@ -227,7 +234,6 @@ public class GestionLotVet extends JFrame {
 		
 		model.addColumn("Bateau");
 		model.addColumn("N° Lot");
-		model.addColumn("Type bac");
 		model.addColumn("Espèce");
 		model.addColumn("Taille");
 		model.addColumn("Qualité");
@@ -251,12 +257,11 @@ public class GestionLotVet extends JFrame {
 			
 			rowData.add(row.get("nom"));
 			rowData.add(lots.LotsMethods.getNumLot((Integer)row.get("idBateau"), (Integer)row.get("idLot")));
-			rowData.add(row.get("idTypeBac"));
 			rowData.add(row.get("nomCourt"));
 			rowData.add(row.get("idTaille"));
 			rowData.add(row.get("idQualite"));
 			rowData.add(row.get("idPresentation"));
-			rowData.add(row.get("poidsBrutLot"));
+			rowData.add(lots.LotsMethods.getPoidsLot((Integer) row.get("id")));
 			model.addRow(rowData);
 		}
 	}

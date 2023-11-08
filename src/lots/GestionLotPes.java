@@ -41,10 +41,10 @@ public class GestionLotPes extends JFrame {
 	private static DefaultTableModel model;
 	private JTable table;
 	private JScrollPane JScroll;
-	private JButton btnSaisirPoids;
 	private JButton btnBloquer;
 	private JButton btnTicket;
 	private JButton btnRetour;
+	private JButton btnVoirBacs;
 	
 	private static JDatePickerImpl datePicker;
 	private static JComboBox<Item<Integer>> comboBoxBateau;
@@ -73,9 +73,9 @@ public class GestionLotPes extends JFrame {
 		model.setValue(selectedDate);
 		model.setSelected(true);
 		Properties p = new Properties();
-		p.put("text.today", "Today");
-		p.put("text.month", "Month");
-		p.put("text.year", "Year");
+		p.put("text.today", "Aujourd'hui");
+		p.put("text.month", "Mois");
+		p.put("text.year", "Année");
 		JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
 		datePicker = new JDatePickerImpl(datePanel, new main.DateLabelFormatter()); 
 		contentPane.add(datePicker);
@@ -129,21 +129,23 @@ public class GestionLotPes extends JFrame {
 		    }
 		});
 		
-		btnSaisirPoids = new JButton("Saisir / modifier poids");
-		btnSaisirPoids.setEnabled(false);
-		btnSaisirPoids.setBackground(new Color(0, 0, 153));
-		btnSaisirPoids.addActionListener(new ActionListener() {
+		btnVoirBacs = new JButton("Voir les bacs associés");
+		btnVoirBacs.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int row = table.getSelectedRow();
 				Integer idLot = (Integer) table.getModel().getValueAt(row, 0);
-				lots.SaisiePoidsLot poidsLot = new lots.SaisiePoidsLot(idLot);
-				poidsLot.setLocationRelativeTo(null);
-				poidsLot.setVisible(true);
+				java.sql.Date selectedDate = (java.sql.Date) datePicker.getModel().getValue();
+				bacs.GestionBacPes gestionBacPes = new bacs.GestionBacPes(idLot);
+				gestionBacPes.setLocationRelativeTo(null);
+				gestionBacPes.setVisible(true);
+				dispose();
 			}
 		});
-		btnSaisirPoids.setForeground(Color.WHITE);
-		btnSaisirPoids.setBounds(608, 66, 168, 26);
-		contentPane.add(btnSaisirPoids);
+		btnVoirBacs.setForeground(Color.WHITE);
+		btnVoirBacs.setEnabled(false);
+		btnVoirBacs.setBackground(new Color(0, 0, 153));
+		btnVoirBacs.setBounds(608, 65, 168, 26);
+		contentPane.add(btnVoirBacs);
 		
 		btnBloquer = new JButton("Bloquer");
 		btnBloquer.addActionListener(new ActionListener() {
@@ -188,8 +190,8 @@ public class GestionLotPes extends JFrame {
  	    selectionModel.addListSelectionListener(new ListSelectionListener() {
  	    	public void valueChanged(ListSelectionEvent e) {
  	    		if (table.getSelectedRow() >= 0) {
- 	    			btnSaisirPoids.setEnabled(true);
- 	    			btnSaisirPoids.setBackground(new Color(0, 51, 204));
+ 	    			btnVoirBacs.setEnabled(true);
+ 	    			btnVoirBacs.setBackground(new Color(0, 51, 204));
  	    			
  	    			btnBloquer.setEnabled(true);
  	    			btnBloquer.setBackground(new Color(0, 51, 204));
@@ -197,8 +199,8 @@ public class GestionLotPes extends JFrame {
  	    			btnTicket.setEnabled(true);
  	    			btnTicket.setBackground(new Color(0, 51, 204));
  	    		}else {
- 	    			btnSaisirPoids.setEnabled(false);
- 	    			btnSaisirPoids.setBackground(new Color(0, 0, 153));
+ 	    			btnVoirBacs.setEnabled(false);
+ 	    			btnVoirBacs.setBackground(new Color(0, 0, 153));
  	    			
  	    			btnBloquer.setEnabled(false);
  	    			btnBloquer.setBackground(new Color(0, 0, 153));
@@ -221,7 +223,6 @@ public class GestionLotPes extends JFrame {
 		
 		model.addColumn("Bateau");
 		model.addColumn("N° Lot");
-		model.addColumn("Type bac");
 		model.addColumn("Espèce");
 		model.addColumn("Taille");
 		model.addColumn("Qualité");
@@ -245,12 +246,11 @@ public class GestionLotPes extends JFrame {
 			
 			rowData.add(row.get("nom"));
 			rowData.add(lots.LotsMethods.getNumLot((Integer)row.get("idBateau"), (Integer)row.get("idLot")));
-			rowData.add(row.get("idTypeBac"));
 			rowData.add(row.get("nomCourt"));
 			rowData.add(row.get("idTaille"));
 			rowData.add(row.get("idQualite"));
 			rowData.add(row.get("idPresentation"));
-			rowData.add(row.get("poidsBrutLot"));
+			rowData.add(lots.LotsMethods.getPoidsLot((Integer) row.get("id")));
 			model.addRow(rowData);
 		}
 	}

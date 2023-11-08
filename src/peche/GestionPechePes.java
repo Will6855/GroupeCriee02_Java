@@ -85,9 +85,9 @@ public class GestionPechePes extends JFrame {
 		model.setDate(now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH));
 		model.setSelected(true);
 		Properties p = new Properties();
-		p.put("text.today", "Today");
-		p.put("text.month", "Month");
-		p.put("text.year", "Year");
+		p.put("text.today", "Aujourd'hui");
+		p.put("text.month", "Mois");
+		p.put("text.year", "Année");
 		JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
 		datePicker = new JDatePickerImpl(datePanel, new main.DateLabelFormatter()); 
 		contentPane.add(datePicker);

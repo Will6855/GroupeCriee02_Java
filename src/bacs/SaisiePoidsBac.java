@@ -1,4 +1,4 @@
-package lots;
+package bacs;
 
 import java.awt.EventQueue;
 
@@ -15,7 +15,7 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-public class SaisiePoidsLot extends JFrame {
+public class SaisiePoidsBac extends JFrame {
 
 	/**
 	 * 
@@ -23,7 +23,7 @@ public class SaisiePoidsLot extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField textField;
-	private Float poidsLot = null;
+	private Float poidsBac = null;
 	private Boolean poidsExist = false;
 
 	/**
@@ -33,9 +33,9 @@ public class SaisiePoidsLot extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					SaisiePoidsLot poidsLot = new SaisiePoidsLot(-1);
-					poidsLot.setLocationRelativeTo(null);
-					poidsLot.setVisible(true);
+					SaisiePoidsBac poidsBac = new SaisiePoidsBac(1);
+					poidsBac.setLocationRelativeTo(null);
+					poidsBac.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -46,9 +46,9 @@ public class SaisiePoidsLot extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public SaisiePoidsLot(final Integer idLot) {
+	public SaisiePoidsBac(final Integer idBac) {
 		setResizable(false);
-		setTitle("Poids Lots");
+		setTitle("Poids Bacs");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 283, 196);
 		contentPane = new JPanel();
@@ -58,7 +58,7 @@ public class SaisiePoidsLot extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblTitre = new JLabel("Saisie du poids d'un lot");
+		JLabel lblTitre = new JLabel("Saisie du poids d'un bac");
 		lblTitre.setFont(new Font("Dialog", Font.BOLD, 15));
 		lblTitre.setBounds(46, 28, 182, 16);
 		contentPane.add(lblTitre);
@@ -67,8 +67,8 @@ public class SaisiePoidsLot extends JFrame {
 		textField.setBounds(46, 74, 182, 25);
 		contentPane.add(textField);
 		textField.setColumns(10);
-		Float poidsBac = lots.LotsMethods.getPoidsLot(idLot);
-    	if (poidsBac != 0) {
+		poidsBac = bacs.BacsMethods.getPoidsBac(idBac);
+    	if (poidsBac != null) {
     		textField.setText(poidsBac.toString());
     		poidsExist = true;
     	}
@@ -92,13 +92,13 @@ public class SaisiePoidsLot extends JFrame {
 					return;
 				}
 				try {
-					poidsLot = Float.parseFloat(textField.getText());
+					poidsBac = Float.parseFloat(textField.getText());
 				} catch (Exception e1) {
 					JOptionPane.showMessageDialog(null, "Veuillez saisir un poids valide.", "Message", JOptionPane.INFORMATION_MESSAGE);
 					return;
 				}
 				
-				Boolean result = lots.LotsMethods.addPoidsLot(idLot, poidsLot);
+				Boolean result = bacs.BacsMethods.addPoidsBac(idBac, poidsBac);
 				if (result) {
 					dispose();
 					if (poidsExist) {
@@ -106,7 +106,7 @@ public class SaisiePoidsLot extends JFrame {
 					} else {
 						JOptionPane.showMessageDialog(null, "Ajout effectué.", "Message", JOptionPane.INFORMATION_MESSAGE);
 					}
-					lots.GestionLotPes.updateTable();
+					// lots.GestionBacPes.updateTable();
 				} else {
 					if (poidsExist) {
 						JOptionPane.showMessageDialog(null, "Modification impossible.", "Message", JOptionPane.INFORMATION_MESSAGE);

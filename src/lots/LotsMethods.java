@@ -13,25 +13,9 @@ public class LotsMethods {
 	
 	private static Connection con = main.Connexion.getConnection();
 
-	public static Boolean addPoidsLot(Integer idLot, Float poidsLot) {
-		try {
-		    String query = "UPDATE lot SET poidsBrutLot = ? WHERE id = ?";
-		    PreparedStatement st = con.prepareStatement(query);
-		    st.setFloat(1, poidsLot);
-			st.setInt(2, idLot);
-		    int rs = st.executeUpdate();
-		    if (rs > 0) {
-		    	return true;
-		    }
-		} catch (SQLException ex) {
-			con = main.Connexion.getConnection();
-		}
-		return false;
-	}
-
 	public static Float getPoidsLot(Integer idLot) {
 		try {
-		    String query = "SELECT poidsBrutLot FROM lot WHERE id = ?";
+		    String query = "SELECT SUM(poidsBrutBac) AS poidsBrutLot FROM bac WHERE idLot = ?";
 		    PreparedStatement st = con.prepareStatement(query);
 			st.setInt(1, idLot);
 			ResultSet rs = st.executeQuery();
@@ -50,16 +34,16 @@ public class LotsMethods {
 		try {
 			PreparedStatement st;
 			if (idBateau >= 0) {
-				String query = "SELECT b.nom, l.idBateau, l.idTypeBac, l.idespece, e.nomCourt, l.idtaille, l.idQualite, l.idpresentation, l.poidsBrutLot, l.idLot, l.id FROM lot AS l "
+				String query = "SELECT b.nom, l.idBateau, l.idEspece, e.nomCourt, l.idTaille, l.idQualite, l.idPresentation, l.idLot, l.id FROM lot AS l "
 						+ "INNER JOIN bateau AS b ON b.id = l.idBateau "
-						+ "INNER JOIN espece AS e ON e.id = l.idespece "
-			    		+ "WHERE datePeche = ? AND idbateau = ? "
+						+ "INNER JOIN espece AS e ON e.id = l.idEspece "
+			    		+ "WHERE datePeche = ? AND idBateau = ? "
 			    		+ "ORDER BY b.nom, l.idLot";
 			    st = con.prepareStatement(query);
 			    st.setDate(1, selectedDate);
 			    st.setInt(2, idBateau);
 			} else {
-				String query = "SELECT b.nom, l.idBateau, l.idTypeBac, l.idespece, e.nomCourt, l.idtaille, l.idQualite, l.idpresentation, l.poidsBrutLot, l.idLot, l.id FROM lot AS l "
+				String query = "SELECT b.nom, l.idBateau, l.idEspece, e.nomCourt, l.idTaille, l.idQualite, l.idPresentation, l.idLot, l.id FROM lot AS l "
 						+ "INNER JOIN bateau AS b ON b.id = l.idBateau "
 						+ "INNER JOIN espece AS e ON e.id = l.idespece "
 			    		+ "WHERE datePeche = ? "
