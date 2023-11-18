@@ -9,3 +9,5 @@ mise en place du processus de ventes aux enchères sous Access.
 Pour gérer les versions, nous avons utilisé le logiciel de versionning GitHub. L’application est développée en Java. La méthode de projet
 utilisée est la méthode SCRUM. Nous avons utilisé un espace Trello pour nous coordonner dans l’équipe et partager les documents
 produits.
+
+### Projet réalisé dans le cadre notre formation
