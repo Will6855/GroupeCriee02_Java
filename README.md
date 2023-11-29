@@ -10,4 +10,11 @@ Pour gérer les versions, nous avons utilisé le logiciel de versionning GitHub.
 utilisée est la méthode SCRUM. Nous avons utilisé un espace Trello pour nous coordonner dans l’équipe et partager les documents
 produits.
 
+## Outils utilisés
+GitHub : gestion des versions\
+Java : langage de programmation\
+MySQL : base de données\
+SCRUM : méthode de projet\
+Trello : outil de coordination
+
 > Projet réalisé dans le cadre de notre formation
