@@ -59,4 +59,7 @@ MySQL : base de données\
 SCRUM : méthode de projet\
 Trello : outil de coordination
 
+## BDD
+[Base de donnée MySQL](bdd_criee2.sql)
+
 > Projet réalisé dans le cadre de notre formation
