@@ -1,5 +1,8 @@
 package lots;
 import lots.*;
+import lots.LotsMethods;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import main.*;
 
 import java.awt.EventQueue;
@@ -7,7 +10,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
-
+import bacs.*;
+import main.*;
+import peche.*;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -42,6 +47,12 @@ import org.jdatepicker.impl.SqlDateModel;
 import main.Item;
 import peche.GestionPecheVet;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Date;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
@@ -58,8 +69,11 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.SwingConstants;
 
 public class CreerLot extends JFrame {
-	
-	private static JComboBox<Item<Integer>> comboBoxBateau;
+	private JComboBox<Item<Integer>> comboBoxEspece;
+	private JComboBox<Item<Integer>> comboBoxTaille;
+	private JComboBox<Item<String>> comboBoxQualite;
+	private JComboBox<Item<String>> comboBoxPresentation;
+	private JComboBox<Item<Integer>> comboBoxBateau;
 
 	private JPanel contentPane;
 	private static final long serialVersionUID = 1L;
@@ -70,7 +84,11 @@ public class CreerLot extends JFrame {
 	private JButton btnSupprimer;
 	private JButton btnRetour;
 	
+	
 	private static JDatePickerImpl datePicker;
+	
+	
+	
 
 	
 
@@ -89,6 +107,9 @@ public class CreerLot extends JFrame {
 			}
 		});
 	}
+
+	
+	
 
 	/**
 	 * Create the frame.
@@ -116,7 +137,11 @@ public class CreerLot extends JFrame {
 			model.addRow(rowData);
 		}
 	}
+	
+	
 	public CreerLot(Integer idBateau, java.sql.Date selectedDate) {
+
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 181, 390);
 		contentPane = new JPanel();
@@ -167,7 +192,7 @@ public class CreerLot extends JFrame {
 		contentPane.add(comboBoxBateau);
 		contentPane.add(label);
 		
-				final JComboBox<Item<Integer>> comboBoxEspece = new JComboBox<Item<Integer>>();
+				comboBoxEspece = new JComboBox<Item<Integer>>();
 				comboBoxEspece.setBounds(5, 89, 156, 21);
 				comboBoxEspece.setToolTipText("Sélectionnez une espèce");
 				ArrayList<HashMap<String, Object>> allEspece = main.MainMethods.getAllEspece();
@@ -183,7 +208,7 @@ public class CreerLot extends JFrame {
 						contentPane.add(comboBoxEspece);
 		contentPane.add(label_1);
 		
-				JComboBox<Item<Integer>> comboBoxTaille = new JComboBox<Item<Integer>>();
+	    		comboBoxTaille = new JComboBox<Item<Integer>>();
 				comboBoxTaille.setBounds(5, 152, 156, 21);
 				comboBoxTaille.setToolTipText("Sélectionnez une taille");
 				ArrayList<HashMap<String, Object>> allTaille = main.MainMethods.getAllTaille();
@@ -200,7 +225,7 @@ public class CreerLot extends JFrame {
 						contentPane.add(comboBoxTaille);
 		contentPane.add(label_2);
 		
-				final JComboBox<Item<String>> comboBoxQualite = new JComboBox<Item<String>>();
+	    		comboBoxQualite = new JComboBox<Item<String>>();
 				comboBoxQualite.setBounds(5, 215, 156, 21);
 				comboBoxQualite.setToolTipText("Sélectionnez une qualité");
 				ArrayList<HashMap<String, Object>> allQualite = main.MainMethods.getAllQualite();
@@ -220,7 +245,7 @@ public class CreerLot extends JFrame {
 						// Ajout d'une JComboBox pour Presentation (de type String)
 
 		
-				JComboBox<Item<String>> comboBoxPresentation = new JComboBox<Item<String>>();
+	    		comboBoxPresentation = new JComboBox<Item<String>>();
 				comboBoxPresentation.setBounds(5, 278, 156, 21);
 				comboBoxPresentation.setToolTipText("Sélectionnez une présentation");
 				ArrayList<HashMap<String, Object>> allPresentation = main.MainMethods.getAllPresentation();
@@ -244,17 +269,66 @@ public class CreerLot extends JFrame {
 
 			}
 		});
+		
 		btnRetour.setForeground(Color.WHITE);
 		btnRetour.setBackground(new Color(255,0,51));
 		contentPane.add(btnRetour);
 		
+		
+		
 		JButton Valider = new JButton("Valider");
 		Valider.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
+		    public void actionPerformed(ActionEvent e) {
+		    	enregistrerLot();
+		        
+		    }
 		});
 		Valider.setBounds(94, 320, 63, 21);
 		contentPane.add(Valider);
 	}
+	public void enregistrerLot() {
+	    try {
+	        // Récupérer les valeurs sélectionnées dans les combobox
+	        Item<Integer> selectedItemBateau = (Item<Integer>) comboBoxBateau.getSelectedItem();
+	        Integer idBateau = selectedItemBateau.getValue();
+	        Item<Integer> selectedItemEspece = (Item<Integer>) comboBoxEspece.getSelectedItem();
+	        Integer idEspece = selectedItemEspece.getValue();
+	        Item<Integer> selectedItemTaille = (Item<Integer>) comboBoxTaille.getSelectedItem();
+	        Integer idTaille = selectedItemTaille.getValue();
+	        Item<String> selectedItemQualite = (Item<String>) comboBoxQualite.getSelectedItem();
+	        String idQualite = selectedItemQualite.getValue();
+	        Item<String> selectedItemPresentation = (Item<String>) comboBoxPresentation.getSelectedItem();
+	        String idPresentation = selectedItemPresentation.getValue();
+
+	        // Connexion à la base de données
+	        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/bdd_criee2", "root", "");
+
+	        // Requête SQL pour insérer les données dans la table "lot"
+	        String query = "INSERT INTO lot (datePeche, idBateau, idEspece, idTaille, idQualite, idPresentation) VALUES (?, ?, ?, ?, ?, ?)";
+	        PreparedStatement preparedStmt = conn.prepareStatement(query);
+	        preparedStmt.setDate(1, new java.sql.Date(new Date().getTime())); // Date actuelle
+	        preparedStmt.setInt(2, idBateau);
+	        preparedStmt.setInt(3, idEspece);
+	        preparedStmt.setInt(4, idTaille);
+	        preparedStmt.setString(5, idQualite);
+	        preparedStmt.setString(6, idPresentation);
+
+	        // Exécuter la requête
+	        preparedStmt.execute();
+
+	        // Fermer la connexion
+	        conn.close();
+
+	        // Afficher un message de succès
+	        JOptionPane.showMessageDialog(null, "Lot enregistré avec succès !");
+	    } catch (SQLException ex) {
+	        // Gérer les erreurs de la base de données
+	        ex.printStackTrace();
+	        JOptionPane.showMessageDialog(null, "Erreur lors de l'enregistrement du lot : " + ex.getMessage());
+	    }
+	}
+
+	
+	
 }
 
